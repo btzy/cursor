@@ -32,4 +32,11 @@
 *.app
 
 # Visual Studio
-.vs
+.vs/
+*.dll.manifest
+*.exp
+*.pdb
+
+# Folders
+lib/
+
