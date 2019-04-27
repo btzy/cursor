@@ -1,0 +1,72 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "ZLIB_INCLUDE_DIR",
+          "value": "C:\\Users\\AdminCOOP\\Documents\\GitHub\\cursor\\zlib-1.2.11",
+          "type": "PATH"
+        },
+        {
+          "name": "ZLIB_LIBRARY_RELEASE",
+          "value": "C:\\Users\\AdminCOOP\\Documents\\GitHub\\cursor\\zlib-1.2.11\\lib\\zlibstatic.lib",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_INSTALL_PREFIX",
+          "value": "C:\\Users\\AdminCOOP\\Documents\\GitHub\\cursor\\libpng-1.6.35",
+          "type": "PATH"
+        },
+        {
+          "name": "PNG_SHARED",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "CMAKE_ASM_FLAGS_RELEASE",
+          "value": "/GL",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_RELEASE",
+          "value": "/MD /O2 /Ob2 /DNDEBUG /GL",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_EXE_LINKER_FLAGS_RELEASE",
+          "value": "/INCREMENTAL:NO /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_MODULE_LINKER_FLAGS_RELEASE",
+          "value": "/INCREMENTAL:NO /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_RC_FLAGS_RELEASE",
+          "value": "/LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_SHARED_LINKER_FLAGS_RELEASE",
+          "value": "/INCREMENTAL:NO /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_STATIC_LINKER_FLAGS_RELEASE",
+          "value": "/LTCG",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}
