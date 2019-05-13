@@ -5,6 +5,11 @@ project (cursordriver)
 
 add_library(cursordriver
     src/cursordriver.cpp
+    src/imagereader.cpp
+)
+
+add_executable(cursortest
+    test/test.cpp
 )
 
 target_include_directories(cursordriver
@@ -13,10 +18,27 @@ target_include_directories(cursordriver
     PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/src
         ${CMAKE_CURRENT_LIST_DIR}/../libcursor/include
-        ${CMAKE_CURRENT_LIST_DIR}/../libpng-1.6.35/include
+        ${CMAKE_CURRENT_LIST_DIR}/../libpng-1.6.35/libpng-1.6.35/include
 )
+set_target_properties(cursordriver PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+
+target_include_directories(cursortest
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/test
+        ${CMAKE_CURRENT_LIST_DIR}/include
+        ${CMAKE_CURRENT_LIST_DIR}/../libcursor/include
+)
+target_link_libraries(cursortest
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/lib/cursordriver.lib
+        ${CMAKE_CURRENT_LIST_DIR}/../libcursor/lib/libcursor.lib
+		${CMAKE_CURRENT_LIST_DIR}/../libpng-1.6.35/libpng-1.6.35/lib/libpng16_static.lib
+		${CMAKE_CURRENT_LIST_DIR}/../zlib-1.2.11/lib/zlibstatic.lib
+)
+set_target_properties(cursortest PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/bin)
 
 set_property(TARGET cursordriver PROPERTY CXX_STANDARD 17)
+set_property(TARGET cursortest PROPERTY CXX_STANDARD 17)
 
 if(MSVC)
     # Force MSVC standards conformance mode to detect non-portable code

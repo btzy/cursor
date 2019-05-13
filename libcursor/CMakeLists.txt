@@ -14,6 +14,8 @@ target_include_directories(libcursor
         ${CMAKE_CURRENT_LIST_DIR}/src
 )
 
+set_target_properties(libcursor PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/lib)
+
 set_property(TARGET libcursor PROPERTY CXX_STANDARD 17)
 
 if(MSVC)

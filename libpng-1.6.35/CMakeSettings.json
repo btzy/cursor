@@ -13,17 +13,17 @@
       "variables": [
         {
           "name": "ZLIB_INCLUDE_DIR",
-          "value": "C:\\Users\\AdminCOOP\\Documents\\GitHub\\cursor\\zlib-1.2.11",
+          "value": "${workspaceRoot}\\..\\zlib-1.2.11",
           "type": "PATH"
         },
         {
           "name": "ZLIB_LIBRARY_RELEASE",
-          "value": "C:\\Users\\AdminCOOP\\Documents\\GitHub\\cursor\\zlib-1.2.11\\lib\\zlibstatic.lib",
+          "value": "${workspaceRoot}\\..\\zlib-1.2.11\\lib\\zlibstatic.lib",
           "type": "FILEPATH"
         },
         {
           "name": "CMAKE_INSTALL_PREFIX",
-          "value": "C:\\Users\\AdminCOOP\\Documents\\GitHub\\cursor\\libpng-1.6.35",
+          "value": "${workspaceRoot}\\libpng-1.6.35",
           "type": "PATH"
         },
         {

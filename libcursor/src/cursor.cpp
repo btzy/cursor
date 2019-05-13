@@ -6,32 +6,42 @@
 
 namespace cursor {
 
-	std::size_t CalculateCursorSize(std::size_t num_images, const Dimensions* dimensions, const Options* options, const Pixel* const* pixels, const bool* const* and_masks, const char*& error_out) noexcept {
-		if (num_images == 0) {
-			error_out = "num_images must be non-zero";
-			return 0;
-		}
-		if (num_images >= (1u << 16)) {
-			error_out = "num_images must fit within 2-byte unsigned int";
-			return 0;
-		}
-		std::size_t total_size = 6 /* ICONDIR */ + 2 /* padding */;
-		for (std::size_t i = 0; i != num_images; ++i) {
-			if (dimensions[i].width == 0 || dimensions[i].width > (1u << 8) || dimensions[i].height == 0 || dimensions[i].height > (1u << 8)) {
-				error_out = "Each image must have height and width between 1 and 256 pixels inclusive";
+	namespace {
+		// pixels and and_masks are in row-major order from bottom to top
+		// dimensions[0] to dimensions[num_images-1], and options[0] to options[num_images-1] must be valid
+		// returns 0 if there is an error
+		std::size_t CalculateCursorSize(std::size_t num_images, const Image* images, const Options* options, const bool* const* and_masks, const char*& error_out) noexcept {
+			if (num_images == 0) {
+				error_out = "num_images must be non-zero";
 				return 0;
 			}
-			// and_mask_byte_count is the number of bytes needed per row by the and_mask.
-			// Each pixel needs one bit, and each row must be padded to a multiple of 4 bytes.
-			std::size_t and_mask_byte_count = (and_masks == nullptr || and_masks[i] == nullptr) ? 0 : ((dimensions[i].width / 8 + 3) / 4 * 4);
-			total_size += 16 /* ICONDIRENTRY */ + 40 /* DIB header */ + (dimensions[i].width * 4 + and_mask_byte_count) /* 4 bytes per pixel */ * dimensions[i].height;
+			if (num_images >= (1u << 16)) {
+				error_out = "num_images must fit within 2-byte unsigned int";
+				return 0;
+			}
+			std::size_t total_size = 6 /* ICONDIR */ + 2 /* padding */;
+			for (std::size_t i = 0; i != num_images; ++i) {
+				if (images[i].dimensions.width == 0 || images[i].dimensions.width > (1u << 8) || images[i].dimensions.height == 0 || images[i].dimensions.height > (1u << 8)) {
+					error_out = "Each image must have height and width between 1 and 256 pixels inclusive";
+					return 0;
+				}
+				// and_mask_byte_count is the number of bytes needed per row by the and_mask.
+				// Each pixel needs one bit, and each row must be padded to a multiple of 4 bytes.
+				std::size_t and_mask_byte_count = (and_masks == nullptr || and_masks[i] == nullptr) ? 0 : ((images[i].dimensions.width / 8 + 3) / 4 * 4);
+				total_size += 16 /* ICONDIRENTRY */ + 40 /* DIB header */ + (images[i].dimensions.width * 4 + and_mask_byte_count) /* 4 bytes per pixel */ * images[i].dimensions.height;
+			}
+			return total_size;
 		}
-		return total_size;
 	}
 
-	void CompileCursor(std::size_t num_images, const Dimensions* dimensions, const Options* options, const Pixel* const* pixels, const bool* const* and_masks, std::byte* out, const char*& error_out) noexcept {
+	owning_span<std::byte> CompileCursor(std::size_t num_images, const Image* images, const Options* options, const bool* const* and_masks, const char*& error_out) noexcept {
 
-		ByteWriter writer(out);
+		std::size_t cursor_size = CalculateCursorSize(num_images, images, options, and_masks, error_out);
+		if (cursor_size == 0)return owning_span<std::byte>();
+
+		owning_span<std::byte> out_span(cursor_size);
+
+		ByteWriter writer(out_span.get());
 		
 		/*
 		ICONDIR structure (6 bytes):
@@ -57,8 +67,9 @@ namespace cursor {
 			4 bytes - Size of image data in bytes.
 			4 bytes - Offset of BMP data from beginning of ICO file.
 			*/
-			const Dimensions& dimension = dimensions[i];
+			const Dimensions& dimension = images[i].dimensions;
 			const Options& option = options[i];
+			const bool* and_mask = (and_masks == nullptr) ? nullptr : and_masks[i];
 			writer.uint8(dimension.width == (1u << 8) ? 0 : static_cast<uint8_t>(dimension.width));
 			writer.uint8(dimension.height == (1u << 8) ? 0 : static_cast<uint8_t>(dimension.height));
 			writer.uint8(0);
@@ -66,8 +77,8 @@ namespace cursor {
 			writer.uint16(static_cast<uint16_t>(option.hotspot_width));
 			writer.uint16(static_cast<uint16_t>(option.hotspot_height));
 			// and_mask_byte_count: see CalculateCursorSize() for explanation.
-			std::size_t and_mask_byte_count = (and_masks == nullptr || and_masks[i] == nullptr) ? 0 : ((dimensions[i].width / 8 + 3) / 4 * 4);
-			std::uint32_t bmp_byte_count = static_cast<std::uint32_t>(40 /* DIB header */ + (dimensions[i].width * 4 + and_mask_byte_count) /* 4 bytes per pixel */ * dimensions[i].height);
+			std::size_t and_mask_byte_count = (and_mask == nullptr) ? 0 : ((dimension.width / 8 + 3) / 4 * 4);
+			std::uint32_t bmp_byte_count = static_cast<std::uint32_t>(40 /* DIB header */ + (dimension.width * 4 + and_mask_byte_count) /* 4 bytes per pixel */ * dimension.height);
 			writer.uint32(bmp_byte_count);
 			writer.uint32(image_offset);
 			image_offset += bmp_byte_count;
@@ -91,9 +102,9 @@ namespace cursor {
 			4 bytes - Number of colours in the colour palette, 0 for us.
 			4 bytes - Number of important colours used, 0 for us.
 			*/
-			const Dimensions& dimension = dimensions[i];
+			const Dimensions& dimension = images[i].dimensions;
 			const Options& option = options[i];
-			const Pixel* pixel = pixels[i];
+			const Pixel* pixel = images[i].buffer;
 			const bool* and_mask = (and_masks == nullptr) ? nullptr : and_masks[i];
 			writer.uint32(40);
 			writer.uint32(dimension.width);
@@ -102,8 +113,8 @@ namespace cursor {
 			writer.uint16(32);
 			writer.uint32(0);
 			// and_mask_byte_count: see CalculateCursorSize() for explanation.
-			std::size_t and_mask_byte_count = (and_masks == nullptr || and_masks[i] == nullptr) ? 0 : ((dimensions[i].width / 8 + 3) / 4 * 4);
-			std::uint32_t image_byte_count = static_cast<std::uint32_t>((dimensions[i].width * 4 + and_mask_byte_count) /* 4 bytes per pixel */ * dimensions[i].height);
+			std::size_t and_mask_byte_count = (and_mask == nullptr) ? 0 : ((dimension.width / 8 + 3) / 4 * 4);
+			std::uint32_t image_byte_count = static_cast<std::uint32_t>((dimension.width * 4 + and_mask_byte_count) /* 4 bytes per pixel */ * dimension.height);
 			writer.uint32(image_byte_count);
 			writer.uint32(0);
 			writer.uint32(0);
@@ -142,5 +153,7 @@ namespace cursor {
 				}
 			}
 		}
+
+		return out_span;
 	}
 }

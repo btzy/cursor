@@ -1,0 +1,85 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO",
+          "value": "/debug /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_EXE_LINKER_FLAGS_RELEASE",
+          "value": "/INCREMENTAL:NO /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_CXX_FLAGS_RELWITHDEBINFO",
+          "value": "/MD /Zi /O2 /Ob1 /DNDEBUG /GL",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_CXX_FLAGS_RELEASE",
+          "value": "/MD /O2 /Ob2 /DNDEBUG /GL",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_RELWITHDEBINFO",
+          "value": "/MD /Zi /O2 /Ob1 /DNDEBUG /GL",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO",
+          "value": "/debug  /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_MODULE_LINKER_FLAGS_RELEASE",
+          "value": "/INCREMENTAL:NO /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO",
+          "value": "/debug /INCREMENTAL /LTCG",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_SHARED_LINKER_FLAGS_RELEASE",
+          "value": "/INCREMENTAL:NO /LTCG",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+      "installRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_C_FLAGS_DEBUG",
+          "value": "/MD /Zi /Ob0 /Od /RTC1 /JMC",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_CXX_FLAGS_DEBUG",
+          "value": "/MD /Zi /Ob0 /Od /RTC1 /JMC",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}

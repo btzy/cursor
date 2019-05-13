@@ -34,9 +34,10 @@
 # Visual Studio
 .vs/
 *.dll.manifest
-*.exp
+*.exe
 *.pdb
 
 # Folders
-lib/
+*/lib/
+*/x64/Release/
 
